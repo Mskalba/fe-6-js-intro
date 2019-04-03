@@ -1,4 +1,3 @@
-var initialList = ['Maciek', 'Jakub', 'Michal'];
 var $peopleList;
 var $newHumanName;
 var $addHumanButton;
@@ -11,13 +10,17 @@ function main() {
     $addHumanButton.addEventListener('click', addHumanButtonClickHandler);
     $peopleList.addEventListener('click', listClickManager);
 
-    // initialList.forEach(function(element) {
-    //     addPeopleElement($peopleList, element);
-    // })
+    getTodos();
+}
 
-    initialList.forEach((element) => {
-        addPeopleElement($peopleList, element)
-    })
+function getTodos() {
+    axios('http://195.181.210.249:3000/todo/')
+        .then(response => response.data)
+        .then(data => {
+            data.forEach(element => {
+                addPeopleElement($peopleList, element.title, element.id)
+            });
+        })
 }
 
 function listClickManager(event) {
@@ -71,8 +74,11 @@ function editClickHandler(event) {
     */
 }
 
-function addPeopleElement(list, name) {
+function addPeopleElement(list, name, id) {
     var newElement = document.createElement('li');
+
+    newElement.dataset.id = id;
+
     var textElement = document.createElement('span');
 
     textElement.textContent = name;
@@ -105,7 +111,17 @@ function addHumanButtonClickHandler() {
     var newName = $newHumanName.value;
 
     if(newName) {
-        addPeopleElement($peopleList, newName);
+        axios.post('http://195.181.210.249:3000/todo/', {
+            title: newName,
+            author: 'Maciek-Mac'
+        })
+        .then(function () {
+            $peopleList.innerHTML = '';
+            getTodos();
+        })
+
+
+        // addPeopleElement($peopleList, newName);
         $newHumanName.value = '';
     }
 }
