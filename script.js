@@ -10,6 +10,7 @@ function main() {
     $addHumanButton.addEventListener('click', addHumanButtonClickHandler);
     $peopleList.addEventListener('click', listClickManager);
 
+    asyncAwaitGetTodos();
     getTodos();
 }
 
@@ -21,6 +22,19 @@ function getTodos() {
                 addPeopleElement($peopleList, element.title, element.id)
             });
         })
+        .catch(console.error)
+}
+
+async function asyncAwaitGetTodos() {
+    try{
+        const response = await axios('http://195.181.210.249:3000/todo/');
+
+        response.data.forEach(element => {
+            addPeopleElement($peopleList, element.title, element.id)
+        });
+    } catch(e) {
+        console.error(e);
+    }
 }
 
 function listClickManager(event) {
